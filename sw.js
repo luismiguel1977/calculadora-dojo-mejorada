@@ -1,5 +1,5 @@
 /* Service worker — Calculadora Dojo */
-var CACHE = "dojo-calc-v2.5";
+var CACHE = "dojo-calc-v2.6";
 var PRECACHE = [
   "./",
   "./index.html",
