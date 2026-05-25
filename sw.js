@@ -1,9 +1,9 @@
 /* Service worker — Calculadora Dojo */
-var CACHE = "dojo-calc-v2.4";
+var CACHE = "dojo-calc-v2.5";
 var PRECACHE = [
   "./",
   "./index.html",
-  "./dojo-v2.1.html",
+  "./dojo-v2.2.html",
   "./manifest.webmanifest",
   "./icons/icon-180.png",
   "./icons/icon-192.png",
@@ -56,7 +56,7 @@ self.addEventListener("fetch", function (event) {
           return response;
         })
         .catch(function () {
-          return caches.match("./dojo-v2.1.html");
+          return caches.match("./dojo-v2.2.html");
         });
     })
   );
