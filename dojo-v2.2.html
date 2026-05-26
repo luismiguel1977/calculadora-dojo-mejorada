@@ -859,9 +859,9 @@
         <p class="hint">Lo que cobra tu competidor por cada terminal al mes.</p>
       </div>
       <div class="row">
-        <label for="pctTicketsPenal">% operaciones con recargo 0,05 &euro; fijos (proveedor, pon 0 si no lo cobra)</label>
-        <input type="number" id="pctTicketsPenal" min="0" max="100" step="1" value="100" />
-        <p class="hint">Solo para la comparativa impresa: % de transacciones a las que el proveedor cobra 0,05 &euro;/op adem&aacute;s del %.</p>
+        <label for="pctTicketsPenal">% operaciones con m&iacute;nimo (Competencia)</label>
+        <input type="number" id="pctTicketsPenal" min="0" max="100" step="1" value="0" />
+        <p class="hint">% de transacciones donde la competencia aplica su m&iacute;nimo de 0,05 &euro; por operaci&oacute;n.</p>
       </div>
     </section>
 
@@ -1090,7 +1090,7 @@
     var compPct = Math.max(0, num("compPct")) / 100;
     var compFijo = Math.max(0, num("compFijo"));
     var pctPen = clampPct(num("pctTicketsPenal")) / 100;
-    var compComision = r.cto * compPct + pctPen * r.n * 0.05;
+    var compComision = r.n * feePerTxn(r.ticket, compPct, 0.05, pctPen);
     var compAlqPerTerm = Math.max(0, num("compAlquilerTerm"));
     var compAlquilerPrint = compAlqPerTerm * r.numTerminales;
     var alquilerPrint = r.alquilerSinIva;
@@ -1512,9 +1512,9 @@
     var nota =
       "* Proveedor: " +
       fmtPct(compPctVal) +
-      " + 0,05\u20ac/trans (" +
-      Math.round(p.pctPenPct) +
-      "% tickets)" +
+      (p.pctPenPct > 0
+        ? " (" + Math.round(p.pctPenPct) + "% op. con m\u00edn. 0,05\u20ac)"
+        : "") +
       (r.compFijo > 0 ? " + " + fmtEuroPrint(r.compFijo) + " fijos/mes" : "") +
       " | Dojo: " +
       (useMix ? mixPct : tarifaLbl) +
