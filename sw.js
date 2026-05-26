@@ -1,5 +1,5 @@
 /* Service worker — Calculadora Dojo */
-var CACHE = "dojo-calc-v2.6";
+var CACHE = "dojo-calc-v3.0";
 var PRECACHE = [
   "./",
   "./index.html",
@@ -43,21 +43,18 @@ self.addEventListener("fetch", function (event) {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request).then(function (cached) {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then(function (response) {
-          if (response && response.status === 200 && response.type === "basic") {
-            var copy = response.clone();
-            caches.open(CACHE).then(function (cache) {
-              cache.put(event.request, copy);
-            });
-          }
-          return response;
-        })
-        .catch(function () {
-          return caches.match("./dojo-v2.2.html");
-        });
-    })
+    fetch(event.request)
+      .then(function (response) {
+        if (response && response.status === 200) {
+          var copy = response.clone();
+          caches.open(CACHE).then(function (cache) {
+            cache.put(event.request, copy);
+          });
+        }
+        return response;
+      })
+      .catch(function () {
+        return caches.match(event.request);
+      })
   );
 });
