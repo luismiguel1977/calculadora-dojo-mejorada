@@ -859,9 +859,9 @@
         <p class="hint">Lo que cobra tu competidor por cada terminal al mes.</p>
       </div>
       <div class="row">
-        <label for="pctTicketsPenal">% operaciones con m&iacute;nimo (Competencia)</label>
-        <input type="number" id="pctTicketsPenal" min="0" max="100" step="1" value="0" />
-        <p class="hint">% de transacciones donde la competencia aplica su m&iacute;nimo de 0,05 &euro; por operaci&oacute;n.</p>
+        <label for="compPenalFijo">Cargo fijo por operaci&oacute;n de la competencia (EUR)</label>
+        <input type="number" id="compPenalFijo" min="0" max="10" step="0.01" value="0.05" />
+        <p class="hint">El % de operaciones afectadas se toma del campo &laquo;% operaciones con m&iacute;nimo&raquo; de la secci&oacute;n Dojo. Con 0% no se aplica.</p>
       </div>
     </section>
 
@@ -1089,8 +1089,9 @@
   function computePrintComparativa(r) {
     var compPct = Math.max(0, num("compPct")) / 100;
     var compFijo = Math.max(0, num("compFijo"));
-    var pctPen = clampPct(num("pctTicketsPenal")) / 100;
-    var compComision = r.n * feePerTxn(r.ticket, compPct, 0.05, pctPen);
+    var compMin = Math.max(0, num("compPenalFijo"));
+    var pctPen = clampPct(num("pctOpsPenalDojo")) / 100;
+    var compComision = r.n * feePerTxn(r.ticket, compPct, compMin, pctPen);
     var compAlqPerTerm = Math.max(0, num("compAlquilerTerm"));
     var compAlquilerPrint = compAlqPerTerm * r.numTerminales;
     var alquilerPrint = r.alquilerSinIva;
@@ -1509,11 +1510,12 @@
     setPrintText("printCompAnual", fmtEuroPrint(p.totalCompPrint * 12));
     setPrintText("printDojoAnual", fmtEuroPrint(p.totalDojoPrint * 12));
 
+    var compMinVal = Math.max(0, num("compPenalFijo"));
     var nota =
       "* Proveedor: " +
       fmtPct(compPctVal) +
-      (p.pctPenPct > 0
-        ? " (" + Math.round(p.pctPenPct) + "% op. con m\u00edn. 0,05\u20ac)"
+      (p.pctPenPct > 0 && compMinVal > 0
+        ? " (" + Math.round(p.pctPenPct) + "% op. con m\u00edn. " + fmtEuroPrint(compMinVal) + ")"
         : "") +
       (r.compFijo > 0 ? " + " + fmtEuroPrint(r.compFijo) + " fijos/mes" : "") +
       " | Dojo: " +
@@ -1658,7 +1660,7 @@
     document.getElementById("resultsBox").style.opacity = "1";
   }
 
-  ["cto", "ticket", "pctBiz", "pctEu", "pctNonEu", "compPct", "compFijo", "compAlquilerTerm", "pctTicketsPenal", "pctOpsPenalDojo", "tarifa", "dayVol", "dayFee", "numTerminales", "nombreCliente", "nombrePc", "telefonoPc"].forEach(function (id) {
+  ["cto", "ticket", "pctBiz", "pctEu", "pctNonEu", "compPct", "compFijo", "compAlquilerTerm", "compPenalFijo", "pctOpsPenalDojo", "tarifa", "dayVol", "dayFee", "numTerminales", "nombreCliente", "nombrePc", "telefonoPc"].forEach(function (id) {
     var el = document.getElementById(id);
     if (el) el.addEventListener("input", render);
     if (el) el.addEventListener("change", render);
